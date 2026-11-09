@@ -488,7 +488,7 @@ impl<'e> Breaker<'e> {
         // to that height where Word's line keeps growing.
         // At-least spacing does the same: a line of only pictures is as tall as they are (no less
         // than the font's height or the minimum), the pictures on its bottom (Word for Mac
-        // 16.113.4, Georgia 11: an 80 pt picture alone at least 12 pt makes an 80 pt line, and a
+        // 16.114.4, Georgia 11: an 80 pt picture alone at least 12 pt makes an 80 pt line, and a
         // 90 pt one at least 100 pt stands on the line's bottom). Measured without a list label;
         // a labelled line keeps the descent below its pictures, as before.
         let spacing = if let LineSpacing::Multiple(m) = rp.line_spacing { Some(m) } else { None };

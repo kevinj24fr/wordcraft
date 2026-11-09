@@ -14622,7 +14622,7 @@ fn a_line_of_only_pictures_takes_no_descent() {
 
 /// At-least spacing treats a line of only pictures as single spacing does: as tall as the
 /// pictures (no less than the minimum), the pictures on its bottom, no descent below them
-/// (Word for Mac 16.113.4, Georgia 11: an 80 pt picture alone at least 12 pt makes an 80 pt line;
+/// (Word for Mac 16.114.4, Georgia 11: an 80 pt picture alone at least 12 pt makes an 80 pt line;
 /// a 90 pt one at least 100 pt stands on the bottom of a 100 pt line).
 #[test]
 fn an_at_least_line_of_only_pictures_takes_no_descent() {
