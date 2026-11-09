@@ -14620,6 +14620,33 @@ fn a_line_of_only_pictures_takes_no_descent() {
     assert!(para.lines.len() == 2 && (para.lines[0].height - 30.0).abs() < 0.01, "picture, then a line break: {}", para.lines[0].height);
 }
 
+/// At-least spacing treats a line of only pictures as single spacing does: as tall as the
+/// pictures (no less than the minimum), the pictures on its bottom, no descent below them
+/// (Word for Mac 16.113.4, Georgia 11: an 80 pt picture alone at least 12 pt makes an 80 pt line;
+/// a 90 pt one at least 100 pt stands on the bottom of a 100 pt line).
+#[test]
+fn an_at_least_line_of_only_pictures_takes_no_descent() {
+    use wordcraft_doc::props::LineSpacing;
+    let line_of = |lead: &str, min: f32, h: f32| {
+        let mut d = Document::from_text(lead);
+        if let Some(wordcraft_doc::Block::Para(p)) = d.body.get_mut(0).map(std::sync::Arc::make_mut) {
+            p.props.line_spacing = Some(LineSpacing::AtLeast(min));
+            let at = p.len();
+            p.insert_object(at, picture(60.0, h, Default::default()), &Default::default()).unwrap();
+        }
+        let l = lay(&d);
+        let Some(Placed::Lines { para, .. }) = l.pages[0].items.iter().find(|i| matches!(i, Placed::Lines { .. })) else { panic!() };
+        (para.lines[0].height, para.lines[0].baseline - para.lines[0].top, para.styles[0].descent)
+    };
+    let (h, base, desc) = line_of("", 12.0, 80.0);
+    assert!(desc > 1.0 && (h - 80.0).abs() < 0.01 && (base - 80.0).abs() < 0.01, "alone: line {h}, baseline {base}");
+    let (h, base, _) = line_of("", 100.0, 90.0);
+    assert!((h - 100.0).abs() < 0.01 && (base - 100.0).abs() < 0.01, "under the minimum: line {h}, baseline {base}");
+    // Beside text the line keeps the text's descent.
+    let (h, base, desc) = line_of("Text ", 12.0, 80.0);
+    assert!((h - (80.0 + desc)).abs() < 0.01 && (base - 80.0).abs() < 0.01, "with text: line {h}, baseline {base}");
+}
+
 /// A kept-together paragraph starting a continuous section low on a page, with room there for
 /// one of its lines, moves whole to the next page, where it fits (#3907 review).
 #[test]
